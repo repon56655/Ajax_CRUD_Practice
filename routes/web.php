@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\CrudController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('/',[CrudController::class,'index'])->name("index.view");
+Route::get('/add',[CrudController::class,'add_view'])->name("add_view");
+Route::get('/add_user',[CrudController::class,'add_user'])->name("add_user");
+Route::get('/store_user',[CrudController::class,'store_user'])->name("store_user");
