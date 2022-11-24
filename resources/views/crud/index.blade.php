@@ -115,7 +115,7 @@
                             var allData="";
                             var successCount = 1;
                             $.each(response.alldata, function(key, item){
-                                allData += '<tr>\
+                                allData += '<tr id="delete'+item.id+'">\
                                 <td>'+successCount+++'\
                                 <td>'+item.name+'\
                                 <td>'+item.email+'</td>\
@@ -212,7 +212,7 @@
                         url: "{{ route('delete_user') }}",
                         data: {id:id},
                         success: function (response) {
-                        $("#delete"+d_id).remove();
+                        $("#delete"+id).remove();
                         Swal.fire(
                             'Deleted!',
                             'User has been deleted.',
