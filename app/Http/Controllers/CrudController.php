@@ -52,4 +52,29 @@ class CrudController extends Controller
         ]);
        }
     }
+
+    public function delete_user(Request $request){
+    
+        $allData = CrudModel::where('id','=',$request->id)->first();
+        $allData->delete();
+        
+        if($allData)
+        {
+            return response()->json([
+                'status'=>200,
+                'supplier'=>  $allData,
+                'supplier_id'=>  $allData->id,
+                'supplier_name'=>  $allData->name,
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status'=>404,
+                'message'=>'supplier Not Found',
+            ]);
+        }
+   
+        
+    }
 }

@@ -24,6 +24,7 @@
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Address</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody class="alldata">
@@ -32,7 +33,7 @@
               </table>
         </div>
             
-            <!-- Modal -->
+            <!-- Add User Modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -64,10 +65,45 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Update Modal -->
+            <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="updateModalLabel">Update User Information</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="uname" class="form-label">User Name</label>
+                                <input type="text" class="form-control name" id="uname" aria-describedby="emailHelp">
+                    
+                            </div>
+                            <div class="mb-3">
+                                <label for="uemail" class="form-label">Email</label>
+                                <input type="email" class="form-control email" id="uemail">
+                            </div>
+                            <div class="mb-3">
+                                <label for="uphone" class="form-label">Phone</label>
+                                <input type="phone" class="form-control phone" id="uphone">
+                            </div>
+                            <div class="mb-3">
+                                <label for="uaddress" class="form-label">Address</label>
+                                <input type="text" class="form-control address" id="uaddress">
+                            </div>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-success" onclick="update()">Add User</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.2.2/js/bootstrap.min.js" integrity="sha512-5BqtYqlWfJemW5+v+TZUs22uigI8tXeVah5S/1Z6qBLVO7gakAOtkOzUtgq6dsIo5c0NJdmGPs0H9I+2OHUHVQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
             function show(){
                 $.ajax({
@@ -85,9 +121,13 @@
                                 <td>'+item.email+'</td>\
                                 <td>'+item.phone+'</td>\
                                 <td>'+item.address+'</td>\
+                                <td>\
+                                    <button data-toggle="modal" data-bs-target="#updateModal" id="'+item.id+'" class="updateId btn btn-info btn-sm"> <i class="fa fa-edit"></i> </button>\
+                                    <button data-toggle="modal" data-bs-target="#delete" value="'+item.id+'" class="deleteId btn btn-danger btn-sm"> <i class="fa fa-trash"></i> </button>\
+                                </td>\
                                 </tr>';
                             });
-                            jQuery(".alldata").html(allData);
+                            $(".alldata").html(allData);
                                 
                             
                         }
@@ -122,19 +162,67 @@
                     success:function(response){
                         if(response["msg"]=="104"){
                             $('#exampleModal').modal('hide');
-                            jQuery(".msg").html('<div class="alert alert-danger">Data Not Submited</div>')
-                            jQuery(".msg").fadeOut(1000);
+                            $(".msg").html('<div class="alert alert-danger">Data Not Submited</div>')
+                            $(".msg").fadeOut(1000);
                             
                         }
                         else if(response.msg=="success"){
-                            show();
+                            
                             $('#exampleModal').modal('hide');
-                            jQuery(".msg").html('<div class="alert alert-success">Data Submited</div>');
-                            jQuery(".msg").fadeOut(1000);
+                            show();
+                            Swal.fire(
+                            'Successfully Added!',
+                            'Your file has been added.',
+                            'success'
+                            )
+                            
                         }
                     }
+                    
                 });
+                
+
             }
+
+            jQuery(document).on("click", ".updateId", function(){
+  
+            });
+
+            jQuery(document).on("click", ".deleteId", function(){
+                var id=jQuery(this).val();
+                Swal.fire({
+                title: 'Are you sure?',
+                background: '#080808',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#266e3b',
+                cancelButtonColor: '#d1182f',
+                confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajaxSetup({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        }
+                    });
+                    $.ajax({
+                        type: "GET",
+                        dataType: "JSON",
+                        url: "{{ route('delete_user') }}",
+                        data: {id:id},
+                        success: function (response) {
+                        $("#delete"+d_id).remove();
+                        Swal.fire(
+                            'Deleted!',
+                            'User has been deleted.',
+                            'success'
+                        );
+                        }
+                    });
+                }
+                })
+            })
     </script>
 </body>
 </html>
